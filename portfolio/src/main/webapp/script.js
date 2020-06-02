@@ -17,8 +17,20 @@
  */
 function addRandomGreeting() {
   const greetings =
-    ['\“Good, good. This carpet is overdue for a mopping.\” — Creed Bratton',
-      '\"I\'m not superstitious, but I am a little stitious.\" — Michael Scott'];
+    ['“Good, good. This carpet is overdue for a mopping.” — Creed Bratton',
+      '“I’m not superstitious, but I am a little stitious.” — Michael Scott',
+      '“Oh you’re paying way too much for worms. Who’s your worm guy?” – Creed Bratton',
+      '“www.creedthoughts.gov.www/creedthoughts. Check it out.” – Creed Bratton',
+      '“Fool me once, strike one. Fool me twice... strike three.” — Michael Scott',
+      '“The only problem is whenever I try to make a taco, I get too excited and crush it.” – Kevin Malone',
+      '“If I can’t scuba, then what’s this all been about? What am I working toward?” – Creed Bratton',
+      '“Tell him to call me ASAP as possible.” — Michael Scott',
+      '“I love inside jokes. I’d love to be a part of one someday.” — Michael Scott',
+      '“Well, well, well. How the turntables...” — Michael Scott',
+      '“Okay, well you’re the one who lost the desk.” — Jim Halpert',
+      '“I had to put more and more nickels in his handset, so he '
+        + 'would get used to the weight. Then one day… I took ‘em all out.” — Jim Halpert',
+      '“From time to time I send Dwight faxes. From himself. From the future.” — Jim Halpert'];
 
   // Pick a random greeting.
   const greeting = greetings[Math.floor(Math.random() * greetings.length)];
