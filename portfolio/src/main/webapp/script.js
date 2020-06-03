@@ -30,7 +30,8 @@ function addRandomGreeting() {
       '“Okay, well you’re the one who lost the desk.” — Jim Halpert',
       '“I had to put more and more nickels in his handset, so he '
         + 'would get used to the weight. Then one day… I took ‘em all out.” — Jim Halpert',
-      '“From time to time I send Dwight faxes. From himself. From the future.” — Jim Halpert'];
+      '“From time to time I send Dwight faxes. From himself. From the future.” — Jim Halpert',
+      '“I disagree with.” — Jim Halpert'];
 
   // Pick a random greeting.
   const greeting = greetings[Math.floor(Math.random() * greetings.length)];
