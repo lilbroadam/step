@@ -40,3 +40,12 @@ function addRandomGreeting() {
   const greetingContainer = document.getElementById('greeting-container');
   greetingContainer.innerText = greeting;
 }
+
+/**
+ * Function to get a random quote from the server
+ */
+async function getRandomQuote(){
+  const response = await fetch('/data');
+  const quote = await response.text();
+  document.getElementById('greeting-container').innerText = quote;
+}
