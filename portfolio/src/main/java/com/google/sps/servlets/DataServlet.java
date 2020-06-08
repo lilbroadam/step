@@ -13,7 +13,7 @@
 // limitations under the License.
 
 package com.google.sps.servlets;
-
+import com.google.gson.Gson;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -26,6 +26,7 @@ import java.util.*;
 public class DataServlet extends HttpServlet {
 
   private List<String> quotes;
+  private ArrayList<String> jsonTest;
 
   @Override
   public void init(){
@@ -45,13 +46,21 @@ public class DataServlet extends HttpServlet {
                 + "Then one day... I took 'em all out.\" - Jim Halpert");
     quotes.add("\"From time to time I send Dwight faxes. From himself. From the future.\" - Jim Halpert");
     quotes.add("\"I disagree with.\" - Jim Halpert");
+
+    jsonTest = new ArrayList<>();
+    jsonTest.add("UT Austin");
+    jsonTest.add("Google");
+    jsonTest.add("abc");
   }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String quote = quotes.get((int) (Math.random() * quotes.size()));
-
-    response.setContentType("text/html;");
-    response.getWriter().println(quote);
+    // Convert the jsonTest ArrayList to JSON
+    Gson gson = new Gson();
+    String json = gson.toJson(jsonTest);
+    
+    // Send the JSON as the response
+    response.setContentType("application/json;");
+    response.getWriter().println(json);
   }
 }
