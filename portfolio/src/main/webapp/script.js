@@ -45,7 +45,23 @@ function addRandomGreeting() {
  * Function to get a random quote from the server
  */
 async function getRandomQuote(){
-  const response = await fetch('/data');
-  const quote = await response.text();
-  document.getElementById('greeting-container').innerText = quote;
+  // Handle the JSON returned from the /data servlet
+  fetch('/data').then(response => response.json()).then((json) => {
+    const jsonListElement = document.getElementById('greeting-container');
+    jsonListElement.innerHTML = '';
+    jsonListElement.appendChild(createListElement(json[0]));
+    jsonListElement.appendChild(createListElement(json[1]));
+    jsonListElement.appendChild(createListElement(json[2]));
+  });
+}
+
+/**
+ * Creates an <li> element containing text.
+ * This function was taken from 
+ *   /walkthroughs/week-3-server/examples/server-stats/src/main/webapp/script.js
+ */
+function createListElement(text) {
+  const liElement = document.createElement('li');
+  liElement.innerText = text;
+  return liElement;
 }
