@@ -44,7 +44,7 @@ function addRandomGreeting() {
 /**
  * Function to get a random quote from the server
  */
-async function getRandomQuote(){
+async function getRandomQuote() {
   // Get the quotes in the JSON returned from the /data servlet
   fetch('/data').then(response => response.json()).then((json) => {
     const greetings = json.quotes;
@@ -55,6 +55,25 @@ async function getRandomQuote(){
     // Add it to the page.
     const greetingContainer = document.getElementById('greeting-container');
     greetingContainer.innerText = greeting;
+  });
+}
+
+/**
+ * Fill in the 'favorite-character-votes' div with the current scoreboard
+ */
+async function getCharacterVotes() {
+  // Get the favorite character votes in the JSON returned from the /data servlet
+  fetch('/data').then(response => response.json()).then((json) => {
+    const characterVotes = json.characterVotes;
+
+    const greetingContainer = document.getElementById('favorite-character-votes');
+    greetingContainer.innerHTML = '';
+    var i;
+    for(i = 0; i < Object.keys(characterVotes).length; i++){
+      greetingContainer.appendChild(createListElement(
+        characterVotes[i].character + ": " + characterVotes[i].numVotes
+      ));
+    }
   });
 }
 

@@ -116,14 +116,28 @@ public class DataServlet extends HttpServlet {
   }
 
   private String convertToJson(List<String> officeQuotes, Map<String, Integer> characterVotes){
-      String json = "{";
-      json += "\"quotes\": ";
-      json += new Gson().toJson(officeQuotes);
-      json += "";
-      json += "";
-      json += "";
-      json += "";
+    String json = "{";
+
+    json += "\"quotes\": ";
+    json += new Gson().toJson(officeQuotes);
+    json += ", ";
+    
+    json += "\"characterVotes\": ";
+    json += "[";
+    for(String character : characterVotes.keySet()){
+      json += "{";
+      json += "\"character\": ";
+      json += "\"" + character + "\"";
+      json += ", ";
+      json += "\"numVotes\": ";
+      json += "\"" + characterVotes.get(character) + "\"";
       json += "}";
-      return json;
+      json += ", ";
+    }
+    json = json.substring(0, json.length() - 2); // delete the last ", ";
+    json += "]";
+
+    json += "}";
+    return json;
   }
 }
