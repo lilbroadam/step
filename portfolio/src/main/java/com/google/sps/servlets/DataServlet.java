@@ -26,7 +26,6 @@ import java.util.*;
 public class DataServlet extends HttpServlet {
 
   private List<String> quotes;
-  private ArrayList<String> jsonTest;
   private Map<String, Integer> favoriteCharacterCount;
   private final String NO_FAVORITE = "No favorite";
 
@@ -48,11 +47,6 @@ public class DataServlet extends HttpServlet {
                 + "Then one day... I took 'em all out.\" - Jim Halpert");
     quotes.add("\"From time to time I send Dwight faxes. From himself. From the future.\" - Jim Halpert");
     quotes.add("\"I disagree with.\" - Jim Halpert");
-
-    jsonTest = new ArrayList<>();
-    jsonTest.add("UT Austin");
-    jsonTest.add("Google");
-    jsonTest.add("abc");
 
     favoriteCharacterCount = new TreeMap<>();
     favoriteCharacterCount.put("Michael", 0);
@@ -77,9 +71,7 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // Convert the jsonTest ArrayList to JSON
-    Gson gson = new Gson();
-    String json = gson.toJson(jsonTest);
+    String json = convertToJson(quotes, favoriteCharacterCount);
     
     // Send the JSON as the response
     response.setContentType("application/json;");
@@ -123,4 +115,15 @@ public class DataServlet extends HttpServlet {
     response.sendRedirect("/index.html");
   }
 
+  private String convertToJson(List<String> officeQuotes, Map<String, Integer> characterVotes){
+      String json = "{";
+      json += "\"quotes\": ";
+      json += new Gson().toJson(officeQuotes);
+      json += "";
+      json += "";
+      json += "";
+      json += "";
+      json += "}";
+      return json;
+  }
 }
