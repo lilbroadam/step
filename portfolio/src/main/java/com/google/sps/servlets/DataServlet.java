@@ -63,4 +63,14 @@ public class DataServlet extends HttpServlet {
     response.setContentType("application/json;");
     response.getWriter().println(json);
   }
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String favoriteCharacter = request.getParameter("favorite-character");
+    boolean noFavorite = request.getParameter("no-favorite") == null ? false : true; 
+
+    System.out.println(favoriteCharacter + " " + noFavorite);
+
+    response.sendRedirect("/index.html");
+  }
 }
