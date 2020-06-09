@@ -21,12 +21,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
-/** Servlet that returns some example content. TODO: modify this file to handle comments data */
+/** Servlet that returns some example content. */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
   private List<String> quotes;
   private ArrayList<String> jsonTest;
+  private Map<String, Integer> favoriteCharacterCount;
+  private final String NO_FAVORITE = "No favorite";
 
   @Override
   public void init(){
@@ -51,6 +53,26 @@ public class DataServlet extends HttpServlet {
     jsonTest.add("UT Austin");
     jsonTest.add("Google");
     jsonTest.add("abc");
+
+    favoriteCharacterCount = new TreeMap<>();
+    favoriteCharacterCount.put("Michael", 0);
+    favoriteCharacterCount.put("Pam", 0);
+    favoriteCharacterCount.put("Jim", 0);
+    favoriteCharacterCount.put("Dwight", 0);
+    favoriteCharacterCount.put("Creed", 0);
+    favoriteCharacterCount.put("Angela", 0);
+    favoriteCharacterCount.put("Kevin", 0);
+    favoriteCharacterCount.put("Andy", 0);
+    favoriteCharacterCount.put("Toby", 0);
+    favoriteCharacterCount.put("Stanley", 0);
+    favoriteCharacterCount.put("Ryan", 0);
+    favoriteCharacterCount.put("Kelly", 0);
+    favoriteCharacterCount.put("Darryl", 0);
+    favoriteCharacterCount.put("Meredith", 0);
+    favoriteCharacterCount.put("Oscar", 0);
+    favoriteCharacterCount.put("Phyllis", 0);
+    favoriteCharacterCount.put("David", 0);
+    favoriteCharacterCount.put(NO_FAVORITE, 0);
   }
 
   @Override
@@ -66,11 +88,39 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // Parse data from the client
     String favoriteCharacter = request.getParameter("favorite-character");
     boolean noFavorite = request.getParameter("no-favorite") == null ? false : true; 
 
-    System.out.println(favoriteCharacter + " " + noFavorite);
+    System.out.println("preprocess:" + favoriteCharacter + " " + noFavorite);
+
+    // Make sure only one character was listed
+    if(!noFavorite && 
+        (favoriteCharacter.indexOf(" ") != -1 || favoriteCharacter.indexOf(", ") != -1)){
+      response.setContentType("text/html");
+      response.getWriter().println("Please only enter one character's name");
+      return;
+    }
+
+    // Format string so that only the first letter is capitalized
+    favoriteCharacter = favoriteCharacter.substring(0, 1).toUpperCase()
+                        + favoriteCharacter.substring(1, favoriteCharacter.length()).toLowerCase();
+
+    System.out.println("postprocess:" + favoriteCharacter + " " + noFavorite);
+    
+    if(noFavorite){
+      favoriteCharacterCount.put(NO_FAVORITE, favoriteCharacterCount.get(NO_FAVORITE) + 1);
+    } else if(favoriteCharacterCount.containsKey(favoriteCharacter)){
+      favoriteCharacterCount.put(favoriteCharacter, favoriteCharacterCount.get(favoriteCharacter) + 1);  
+    } else {
+      response.setContentType("text/html");
+      response.getWriter().println("Sorry, your character wasn't recognized");
+      return;        
+    }
+
+    System.out.println(favoriteCharacterCount);
 
     response.sendRedirect("/index.html");
   }
+
 }
