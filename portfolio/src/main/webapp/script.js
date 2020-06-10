@@ -68,8 +68,9 @@ async function getCharacterVotes() {
 
     const greetingContainer = document.getElementById('favorite-character-votes');
     greetingContainer.innerHTML = '';
-    var i;
-    for(i = 0; i < Object.keys(characterVotes).length; i++){
+
+    // Populate the charcter scoreboard
+    for(var i = 0; i < Object.keys(characterVotes).length; i++){
       greetingContainer.appendChild(createListElement(
         characterVotes[i].character + ": " + characterVotes[i].numVotes
       ));

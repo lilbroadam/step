@@ -48,6 +48,7 @@ public class DataServlet extends HttpServlet {
     quotes.add("\"From time to time I send Dwight faxes. From himself. From the future.\" - Jim Halpert");
     quotes.add("\"I disagree with.\" - Jim Halpert");
 
+    // Initialize the character's votes to 0
     favoriteCharacterCount = new TreeMap<>();
     favoriteCharacterCount.put("Michael", 0);
     favoriteCharacterCount.put("Pam", 0);
@@ -84,8 +85,6 @@ public class DataServlet extends HttpServlet {
     String favoriteCharacter = request.getParameter("favorite-character");
     boolean noFavorite = request.getParameter("no-favorite") == null ? false : true; 
 
-    System.out.println("preprocess:" + favoriteCharacter + " " + noFavorite);
-
     // Make sure only one character was listed
     if(!noFavorite && 
         (favoriteCharacter.indexOf(" ") != -1 || favoriteCharacter.indexOf(", ") != -1)){
@@ -97,8 +96,6 @@ public class DataServlet extends HttpServlet {
     // Format string so that only the first letter is capitalized
     favoriteCharacter = favoriteCharacter.substring(0, 1).toUpperCase()
                         + favoriteCharacter.substring(1, favoriteCharacter.length()).toLowerCase();
-
-    System.out.println("postprocess:" + favoriteCharacter + " " + noFavorite);
     
     if(noFavorite){
       favoriteCharacterCount.put(NO_FAVORITE, favoriteCharacterCount.get(NO_FAVORITE) + 1);
@@ -110,11 +107,13 @@ public class DataServlet extends HttpServlet {
       return;        
     }
 
-    System.out.println(favoriteCharacterCount);
-
     response.sendRedirect("/index.html");
   }
 
+  /**
+   * The JSON contains a .quotes array of quotes from The Office
+   * and a .characterVotes array of Objects that are character:numVotes pairs.
+   */
   private String convertToJson(List<String> officeQuotes, Map<String, Integer> characterVotes){
     String json = "{";
 
@@ -134,7 +133,7 @@ public class DataServlet extends HttpServlet {
       json += "}";
       json += ", ";
     }
-    json = json.substring(0, json.length() - 2); // delete the last ", ";
+    json = json.substring(0, json.length() - 2); // delete the last ", "
     json += "]";
 
     json += "}";
