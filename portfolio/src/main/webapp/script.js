@@ -30,7 +30,8 @@ function addRandomGreeting() {
       '“Okay, well you’re the one who lost the desk.” — Jim Halpert',
       '“I had to put more and more nickels in his handset, so he '
         + 'would get used to the weight. Then one day… I took ‘em all out.” — Jim Halpert',
-      '“From time to time I send Dwight faxes. From himself. From the future.” — Jim Halpert'];
+      '“From time to time I send Dwight faxes. From himself. From the future.” — Jim Halpert',
+      '“I disagree with.” — Jim Halpert'];
 
   // Pick a random greeting.
   const greeting = greetings[Math.floor(Math.random() * greetings.length)];
@@ -38,4 +39,29 @@ function addRandomGreeting() {
   // Add it to the page.
   const greetingContainer = document.getElementById('greeting-container');
   greetingContainer.innerText = greeting;
+}
+
+/**
+ * Function to get a random quote from the server
+ */
+async function getRandomQuote(){
+  // Handle the JSON returned from the /data servlet
+  fetch('/data').then(response => response.json()).then((json) => {
+    const jsonListElement = document.getElementById('greeting-container');
+    jsonListElement.innerHTML = '';
+    jsonListElement.appendChild(createListElement(json[0]));
+    jsonListElement.appendChild(createListElement(json[1]));
+    jsonListElement.appendChild(createListElement(json[2]));
+  });
+}
+
+/**
+ * Creates an <li> element containing text.
+ * This function was taken from 
+ *   /walkthroughs/week-3-server/examples/server-stats/src/main/webapp/script.js
+ */
+function createListElement(text) {
+  const liElement = document.createElement('li');
+  liElement.innerText = text;
+  return liElement;
 }
