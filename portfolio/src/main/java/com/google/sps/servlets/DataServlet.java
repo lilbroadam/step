@@ -27,10 +27,10 @@ public class DataServlet extends HttpServlet {
 
   private List<String> quotes;
   private Map<String, Integer> favoriteCharacterCount;
-  private final String NO_FAVORITE = "No favorite";
+  private static final String NO_FAVORITE = "No favorite";
 
   @Override
-  public void init(){
+  public void init() {
     quotes = new ArrayList<>();
     quotes.add("\"Good, good. This carpet is overdue for a mopping.\" - Creed Bratton");
     quotes.add("\"I'm not superstitious, but I am a little stitious.\" - Michael Scott");
@@ -83,11 +83,11 @@ public class DataServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Parse data from the client
     String favoriteCharacter = request.getParameter("favorite-character");
-    boolean noFavorite = request.getParameter("no-favorite") == null ? false : true; 
+    boolean noFavorite = request.getParameter("no-favorite") != null;
 
     // Make sure only one character was listed
-    if(!noFavorite && 
-        (favoriteCharacter.indexOf(" ") != -1 || favoriteCharacter.indexOf(", ") != -1)){
+    if (!noFavorite &&
+        (favoriteCharacter.indexOf(" ") != -1 || favoriteCharacter.indexOf(", ") != -1)) {
       response.setContentType("text/html");
       response.getWriter().println("Please only enter one character's name");
       return;
@@ -95,11 +95,11 @@ public class DataServlet extends HttpServlet {
 
     // Format string so that only the first letter is capitalized
     favoriteCharacter = favoriteCharacter.substring(0, 1).toUpperCase()
-                        + favoriteCharacter.substring(1, favoriteCharacter.length()).toLowerCase();
+                        + favoriteCharacter.substring(1).toLowerCase();
     
-    if(noFavorite){
+    if (noFavorite) {
       favoriteCharacterCount.put(NO_FAVORITE, favoriteCharacterCount.get(NO_FAVORITE) + 1);
-    } else if(favoriteCharacterCount.containsKey(favoriteCharacter)){
+    } else if (favoriteCharacterCount.containsKey(favoriteCharacter)) {
       favoriteCharacterCount.put(favoriteCharacter, favoriteCharacterCount.get(favoriteCharacter) + 1);  
     } else {
       response.setContentType("text/html");
@@ -114,7 +114,7 @@ public class DataServlet extends HttpServlet {
    * The JSON contains a .quotes array of quotes from The Office
    * and a .characterVotes array of Objects that are character:numVotes pairs.
    */
-  private String convertToJson(List<String> officeQuotes, Map<String, Integer> characterVotes){
+  private String convertToJson(List<String> officeQuotes, Map<String, Integer> characterVotes) {
     String json = "{";
 
     json += "\"quotes\": ";
