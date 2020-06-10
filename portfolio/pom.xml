@@ -40,7 +40,7 @@
         <artifactId>appengine-maven-plugin</artifactId>
         <version>2.2.0</version>
         <configuration>
-          <deploy.projectId>adamsamuelson-step</deploy.projectId>
+          <deploy.projectId>adamsamuelson-step-20</deploy.projectId>
           <deploy.version>1</deploy.version>
         </configuration>
       </plugin>
