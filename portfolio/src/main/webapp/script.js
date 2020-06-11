@@ -44,14 +44,37 @@ function addRandomGreeting() {
 /**
  * Function to get a random quote from the server
  */
-async function getRandomQuote(){
-  // Handle the JSON returned from the /data servlet
+async function getRandomQuote() {
+  // Get the quotes in the JSON returned from the /data servlet
   fetch('/data').then(response => response.json()).then((json) => {
-    const jsonListElement = document.getElementById('greeting-container');
-    jsonListElement.innerHTML = '';
-    jsonListElement.appendChild(createListElement(json[0]));
-    jsonListElement.appendChild(createListElement(json[1]));
-    jsonListElement.appendChild(createListElement(json[2]));
+    const greetings = json.quotes;
+
+    // Pick a random greeting.
+    const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+
+    // Add it to the page.
+    const greetingContainer = document.getElementById('greeting-container');
+    greetingContainer.innerText = greeting;
+  });
+}
+
+/**
+ * Fill in the 'favorite-character-votes' div with the current scoreboard
+ */
+async function getCharacterVotes() {
+  // Get the favorite character votes in the JSON returned from the /data servlet
+  fetch('/data').then(response => response.json()).then((json) => {
+    const characterVotes = json.characterVotes;
+
+    const greetingContainer = document.getElementById('favorite-character-votes');
+    greetingContainer.innerHTML = '';
+
+    // Populate the charcter scoreboard
+    for(var i = 0; i < Object.keys(characterVotes).length; i++){
+      greetingContainer.appendChild(createListElement(
+        characterVotes[i].character + ": " + characterVotes[i].numVotes
+      ));
+    }
   });
 }
 

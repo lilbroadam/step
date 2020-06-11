@@ -20,16 +20,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 
-/** Servlet that returns some example content. TODO: modify this file to handle comments data */
+/** Servlet that returns some example content. */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
   private List<String> quotes;
-  private ArrayList<String> jsonTest;
+  private Map<String, Integer> favoriteCharacterCount;
+  private static final String NO_FAVORITE = "No favorite";
 
   @Override
-  public void init(){
+  public void init() {
     quotes = new ArrayList<>();
     quotes.add("\"Good, good. This carpet is overdue for a mopping.\" - Creed Bratton");
     quotes.add("\"I'm not superstitious, but I am a little stitious.\" - Michael Scott");
@@ -47,20 +50,84 @@ public class DataServlet extends HttpServlet {
     quotes.add("\"From time to time I send Dwight faxes. From himself. From the future.\" - Jim Halpert");
     quotes.add("\"I disagree with.\" - Jim Halpert");
 
-    jsonTest = new ArrayList<>();
-    jsonTest.add("UT Austin");
-    jsonTest.add("Google");
-    jsonTest.add("abc");
+    // Initialize the character's votes to 0
+    favoriteCharacterCount = new TreeMap<>();
+    try {
+      Scanner characterNamesScanner = new Scanner(new File("./character_names.txt"));
+      while(characterNamesScanner.hasNext()){
+        favoriteCharacterCount.put(characterNamesScanner.nextLine(), 0);
+      }
+    } catch (FileNotFoundException e) {
+      System.out.println("WARNING: character_names.txt couldn't be found");
+    }
   }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // Convert the jsonTest ArrayList to JSON
-    Gson gson = new Gson();
-    String json = gson.toJson(jsonTest);
+    String json = convertToJson(quotes, favoriteCharacterCount);
     
     // Send the JSON as the response
     response.setContentType("application/json;");
     response.getWriter().println(json);
+  }
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // Parse data from the client
+    String favoriteCharacter = request.getParameter("favorite-character");
+    boolean noFavorite = request.getParameter("no-favorite") != null;
+
+    // Make sure only one character was listed
+    if(!noFavorite && favoriteCharacter.split(",|\\ ").length != 1) {
+      response.setContentType("text/html");
+      response.getWriter().println("Please only enter one character's name");
+      return;
+    }
+
+    // Format string so that only the first letter is capitalized
+    favoriteCharacter = favoriteCharacter.substring(0, 1).toUpperCase()
+                        + favoriteCharacter.substring(1).toLowerCase();
+    
+    if (noFavorite) {
+      favoriteCharacterCount.put(NO_FAVORITE, favoriteCharacterCount.get(NO_FAVORITE) + 1);
+    } else if (favoriteCharacterCount.containsKey(favoriteCharacter)) {
+      favoriteCharacterCount.put(favoriteCharacter, favoriteCharacterCount.get(favoriteCharacter) + 1);  
+    } else {
+      response.setContentType("text/html");
+      response.getWriter().println("Sorry, your character wasn't recognized");
+      return;        
+    }
+
+    response.sendRedirect("/index.html");
+  }
+
+  /**
+   * The JSON contains a .quotes array of quotes from The Office
+   * and a .characterVotes array of Objects that are character:numVotes pairs.
+   */
+  private String convertToJson(List<String> officeQuotes, Map<String, Integer> characterVotes) {
+    String json = "{";
+
+    json += "\"quotes\": ";
+    json += new Gson().toJson(officeQuotes);
+    json += ", ";
+    
+    json += "\"characterVotes\": ";
+    json += "[";
+    for(String character : characterVotes.keySet()){
+      json += "{";
+      json += "\"character\": ";
+      json += "\"" + character + "\"";
+      json += ", ";
+      json += "\"numVotes\": ";
+      json += "\"" + characterVotes.get(character) + "\"";
+      json += "}";
+      json += ", ";
+    }
+    json = json.substring(0, json.length() - 2); // delete the last ", "
+    json += "]";
+
+    json += "}";
+    return json;
   }
 }
