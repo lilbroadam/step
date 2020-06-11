@@ -20,6 +20,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 /** Servlet that returns some example content. */
 @WebServlet("/data")
@@ -50,24 +52,14 @@ public class DataServlet extends HttpServlet {
 
     // Initialize the character's votes to 0
     favoriteCharacterCount = new TreeMap<>();
-    favoriteCharacterCount.put("Michael", 0);
-    favoriteCharacterCount.put("Pam", 0);
-    favoriteCharacterCount.put("Jim", 0);
-    favoriteCharacterCount.put("Dwight", 0);
-    favoriteCharacterCount.put("Creed", 0);
-    favoriteCharacterCount.put("Angela", 0);
-    favoriteCharacterCount.put("Kevin", 0);
-    favoriteCharacterCount.put("Andy", 0);
-    favoriteCharacterCount.put("Toby", 0);
-    favoriteCharacterCount.put("Stanley", 0);
-    favoriteCharacterCount.put("Ryan", 0);
-    favoriteCharacterCount.put("Kelly", 0);
-    favoriteCharacterCount.put("Darryl", 0);
-    favoriteCharacterCount.put("Meredith", 0);
-    favoriteCharacterCount.put("Oscar", 0);
-    favoriteCharacterCount.put("Phyllis", 0);
-    favoriteCharacterCount.put("David", 0);
-    favoriteCharacterCount.put(NO_FAVORITE, 0);
+    try {
+      Scanner characterNamesScanner = new Scanner(new File("./character_names.txt"));
+      while(characterNamesScanner.hasNext()){
+        favoriteCharacterCount.put(characterNamesScanner.nextLine(), 0);
+      }
+    } catch (FileNotFoundException e) {
+      System.out.println("WARNING: character_names.txt couldn't be found");
+    }
   }
 
   @Override
