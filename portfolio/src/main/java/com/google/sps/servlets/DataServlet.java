@@ -78,8 +78,7 @@ public class DataServlet extends HttpServlet {
     boolean noFavorite = request.getParameter("no-favorite") != null;
 
     // Make sure only one character was listed
-    if (!noFavorite &&
-        (favoriteCharacter.indexOf(" ") != -1 || favoriteCharacter.indexOf(", ") != -1)) {
+    if(!noFavorite && favoriteCharacter.split(",|\\ ").length != 1) {
       response.setContentType("text/html");
       response.getWriter().println("Please only enter one character's name");
       return;
