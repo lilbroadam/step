@@ -14,14 +14,25 @@
 
 package com.google.sps.servlets;
 import com.google.gson.Gson;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Scanner;
 
 /** Servlet that returns some example content. */
 @WebServlet("/data")
@@ -50,16 +61,18 @@ public class DataServlet extends HttpServlet {
     quotes.add("\"From time to time I send Dwight faxes. From himself. From the future.\" - Jim Halpert");
     quotes.add("\"I disagree with.\" - Jim Halpert");
 
-    // Initialize the character's votes to 0
+    // Retrieve the character's votes from the datastore
     favoriteCharacterCount = new TreeMap<>();
-    try {
-      Scanner characterNamesScanner = new Scanner(new File("./character_names.txt"));
-      while(characterNamesScanner.hasNext()){
-        favoriteCharacterCount.put(characterNamesScanner.nextLine(), 0);
-      }
-    } catch (FileNotFoundException e) {
-      System.out.println("WARNING: character_names.txt couldn't be found");
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    PreparedQuery results = datastore.prepare(new Query("characterVotes"));
+    for(Entity entity : results.asIterable()){
+      String characterName = entity.getKey().getName();
+      int numVotes = (int)(long) entity.getProperty("numVotes");
+
+      favoriteCharacterCount.put(characterName, numVotes);
     }
+
+    System.out.println("loaded favoriteCharacterCount: " + favoriteCharacterCount);
   }
 
   @Override
@@ -77,25 +90,41 @@ public class DataServlet extends HttpServlet {
     String favoriteCharacter = request.getParameter("favorite-character");
     boolean noFavorite = request.getParameter("no-favorite") != null;
 
-    // Make sure only one character was listed
-    if(!noFavorite && favoriteCharacter.split(",|\\ ").length != 1) {
-      response.setContentType("text/html");
-      response.getWriter().println("Please only enter one character's name");
-      return;
+    if(!noFavorite){
+      // Make sure only one character was listed
+      if(favoriteCharacter.split(",|\\ ").length != 1) {
+        response.setContentType("text/html");
+        response.getWriter().println("Please only enter one character's name");
+        return;
+      }
+
+      // Format string so that only the first letter is capitalized
+      favoriteCharacter = favoriteCharacter.substring(0, 1).toUpperCase()
+                          + favoriteCharacter.substring(1).toLowerCase();
+        
+      if(!favoriteCharacterCount.containsKey(favoriteCharacter)){
+        response.setContentType("text/html");
+        response.getWriter().println("Sorry, your character wasn't recognized");
+        return;
+      }
+    } else {
+      favoriteCharacter = NO_FAVORITE;
     }
 
-    // Format string so that only the first letter is capitalized
-    favoriteCharacter = favoriteCharacter.substring(0, 1).toUpperCase()
-                        + favoriteCharacter.substring(1).toLowerCase();
+    // Update the datastore with the new vote
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    try {
+      Key characterKey = KeyFactory.createKey("characterVotes", favoriteCharacter);
+      Entity characterEntity = datastore.get(characterKey);
+      int currentNumVotes = (int)(long) characterEntity.getProperty("numVotes");
+      characterEntity.setProperty("numVotes", currentNumVotes + 1);
+      datastore.put(characterEntity);
     
-    if (noFavorite) {
-      favoriteCharacterCount.put(NO_FAVORITE, favoriteCharacterCount.get(NO_FAVORITE) + 1);
-    } else if (favoriteCharacterCount.containsKey(favoriteCharacter)) {
       favoriteCharacterCount.put(favoriteCharacter, favoriteCharacterCount.get(favoriteCharacter) + 1);  
-    } else {
+    } catch (Exception e) {
       response.setContentType("text/html");
-      response.getWriter().println("Sorry, your character wasn't recognized");
-      return;        
+      response.getWriter().println("Sorry, there was an error while updating the server");
+      return;
     }
 
     response.sendRedirect("/index.html");
