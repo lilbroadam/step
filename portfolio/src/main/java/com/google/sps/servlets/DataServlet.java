@@ -77,8 +77,9 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String json = convertToJson(quotes, favoriteCharacterCount);
-    
+    int numCharacters = Integer.parseInt(request.getParameter("numCharacters"));
+    String json = convertToJson(quotes, favoriteCharacterCount, numCharacters);
+
     // Send the JSON as the response
     response.setContentType("application/json;");
     response.getWriter().println(json);
@@ -133,8 +134,11 @@ public class DataServlet extends HttpServlet {
   /**
    * The JSON contains a .quotes array of quotes from The Office
    * and a .characterVotes array of Objects that are character:numVotes pairs.
+   * The number of objects in the .characterVotes array will not exceed numCharacters.
+   * TODO(adamsamuelon): when numCharacters imposes a limit on the json, return the top-voted characters
    */
-  private String convertToJson(List<String> officeQuotes, Map<String, Integer> characterVotes) {
+  private String convertToJson(List<String> officeQuotes, Map<String, Integer> characterVotes,
+      int numCharacters) {
     String json = "{";
 
     json += "\"quotes\": ";
@@ -144,6 +148,9 @@ public class DataServlet extends HttpServlet {
     json += "\"characterVotes\": ";
     json += "[";
     for(String character : characterVotes.keySet()){
+      if(numCharacters <= 0) // limit the number of characters returned
+        break;
+
       json += "{";
       json += "\"character\": ";
       json += "\"" + character + "\"";
@@ -152,6 +159,8 @@ public class DataServlet extends HttpServlet {
       json += "\"" + characterVotes.get(character) + "\"";
       json += "}";
       json += ", ";
+
+      numCharacters--;
     }
     json = json.substring(0, json.length() - 2); // delete the last ", "
     json += "]";
