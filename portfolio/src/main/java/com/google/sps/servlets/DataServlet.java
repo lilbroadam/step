@@ -72,6 +72,8 @@ public class DataServlet extends HttpServlet {
       favoriteCharacterCount.put(characterName, numVotes);
     }
 
+    // populateDatastore();
+
     System.out.println("loaded favoriteCharacterCount: " + favoriteCharacterCount);
   }
 
@@ -167,5 +169,9 @@ public class DataServlet extends HttpServlet {
 
     json += "}";
     return json;
+  }
+
+  private void populateDatastore(){
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
   }
 }
