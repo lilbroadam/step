@@ -30,8 +30,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Scanner;
 
 /** Servlet that returns some example content. */
@@ -39,8 +39,9 @@ import java.util.Scanner;
 public class DataServlet extends HttpServlet {
 
   private List<String> quotes;
-  private Map<String, Integer> favoriteCharacterCount;
+  private Set<String> characterNamesSet;
   private static final String NO_FAVORITE = "No favorite";
+  private static int num_characters_display = 10;
 
   @Override
   public void init() {
@@ -61,26 +62,26 @@ public class DataServlet extends HttpServlet {
     quotes.add("\"From time to time I send Dwight faxes. From himself. From the future.\" - Jim Halpert");
     quotes.add("\"I disagree with.\" - Jim Halpert");
 
-    // Retrieve the character's votes from the datastore
-    favoriteCharacterCount = new TreeMap<>();
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    PreparedQuery results = datastore.prepare(new Query("characterVotes"));
-    for(Entity entity : results.asIterable()){
-      String characterName = entity.getKey().getName();
-      int numVotes = (int)(long) entity.getProperty("numVotes");
-
-      favoriteCharacterCount.put(characterName, numVotes);
+    characterNamesSet = new HashSet<>();
+    try {
+      Scanner characterNamesScanner = new Scanner(new File("./character_names.txt"));
+      while(characterNamesScanner.hasNext()){
+        characterNamesSet.add(characterNamesScanner.nextLine());
+      }
+    } catch (FileNotFoundException e) {
+      System.out.println("WARNING: character_names.txt couldn't be found");
     }
 
-    // populateDatastore();
-
-    System.out.println("loaded favoriteCharacterCount: " + favoriteCharacterCount);
+    System.out.println("characterNamesSet: " + characterNamesSet);
   }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    int numCharacters = Integer.parseInt(request.getParameter("numCharacters"));
-    String json = convertToJson(quotes, favoriteCharacterCount, numCharacters);
+    String numCharactersParameter = request.getParameter("numCharacters");
+    if(numCharactersParameter != null){
+      num_characters_display = Integer.parseInt(numCharactersParameter);
+    }
+    String json = convertToJson(quotes, num_characters_display);
 
     // Send the JSON as the response
     response.setContentType("application/json;");
@@ -104,8 +105,8 @@ public class DataServlet extends HttpServlet {
       // Format string so that only the first letter is capitalized
       favoriteCharacter = favoriteCharacter.substring(0, 1).toUpperCase()
                           + favoriteCharacter.substring(1).toLowerCase();
-        
-      if(!favoriteCharacterCount.containsKey(favoriteCharacter)){
+      
+      if(!characterNamesSet.contains(favoriteCharacter)){
         response.setContentType("text/html");
         response.getWriter().println("Sorry, your character wasn't recognized");
         return;
@@ -122,8 +123,6 @@ public class DataServlet extends HttpServlet {
       int currentNumVotes = (int)(long) characterEntity.getProperty("numVotes");
       characterEntity.setProperty("numVotes", currentNumVotes + 1);
       datastore.put(characterEntity);
-    
-      favoriteCharacterCount.put(favoriteCharacter, favoriteCharacterCount.get(favoriteCharacter) + 1);  
     } catch (Exception e) {
       response.setContentType("text/html");
       response.getWriter().println("Sorry, there was an error while updating the server");
@@ -139,8 +138,7 @@ public class DataServlet extends HttpServlet {
    * The number of objects in the .characterVotes array will not exceed numCharacters.
    * TODO(adamsamuelon): when numCharacters imposes a limit on the json, return the top-voted characters
    */
-  private String convertToJson(List<String> officeQuotes, Map<String, Integer> characterVotes,
-      int numCharacters) {
+  private String convertToJson(List<String> officeQuotes, int numCharacters) {
     String json = "{";
 
     json += "\"quotes\": ";
@@ -149,29 +147,28 @@ public class DataServlet extends HttpServlet {
     
     json += "\"characterVotes\": ";
     json += "[";
-    for(String character : characterVotes.keySet()){
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    PreparedQuery results = datastore.prepare(new Query("characterVotes"));
+    for(Entity entity : results.asIterable()){
       if(numCharacters <= 0) // limit the number of characters returned
         break;
 
       json += "{";
       json += "\"character\": ";
-      json += "\"" + character + "\"";
+      json += "\"" + entity.getKey().getName() + "\"";
       json += ", ";
       json += "\"numVotes\": ";
-      json += "\"" + characterVotes.get(character) + "\"";
+      json += "\"" + entity.getProperty("numVotes") + "\"";
       json += "}";
       json += ", ";
 
       numCharacters--;
     }
+
     json = json.substring(0, json.length() - 2); // delete the last ", "
     json += "]";
 
     json += "}";
     return json;
-  }
-
-  private void populateDatastore(){
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
   }
 }
