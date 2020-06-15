@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Scanner;
 
-/** Servlet that returns some example content. */
+/* Servlet that returns quotes from The Office and handles favorite character votes. */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
@@ -62,6 +62,7 @@ public class DataServlet extends HttpServlet {
     quotes.add("\"From time to time I send Dwight faxes. From himself. From the future.\" - Jim Halpert");
     quotes.add("\"I disagree with.\" - Jim Halpert");
 
+    // Populate characterNamesSet to quickly identify if a name is a character's name or not
     characterNamesSet = new HashSet<>();
     try {
       Scanner characterNamesScanner = new Scanner(new File("./character_names.txt"));
@@ -71,16 +72,21 @@ public class DataServlet extends HttpServlet {
     } catch (FileNotFoundException e) {
       System.out.println("WARNING: character_names.txt couldn't be found");
     }
-
-    System.out.println("characterNamesSet: " + characterNamesSet);
   }
 
+  /**
+   * Return a JSON that contains a .quotes array of quotes from The Office
+   * and a .characterVotes array of objects that are character:numVotes pairs.
+   * Optional parameter: numCharacters - set the number of character:numVotes objects
+   * to be returned in the JSON.
+   */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String numCharactersParameter = request.getParameter("numCharacters");
     if(numCharactersParameter != null){
       num_characters_display = Integer.parseInt(numCharactersParameter);
     }
+    
     String json = convertToJson(quotes, num_characters_display);
 
     // Send the JSON as the response
@@ -88,12 +94,16 @@ public class DataServlet extends HttpServlet {
     response.getWriter().println(json);
   }
 
+  /**
+   * Update the datastore with the client's vote for their favorite character.
+   */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // Parse data from the client
+    // Parse data from the client's request
     String favoriteCharacter = request.getParameter("favorite-character");
     boolean noFavorite = request.getParameter("no-favorite") != null;
 
+    // Pre-process client's request
     if(!noFavorite){
       // Make sure only one character was listed
       if(favoriteCharacter.split(",|\\ ").length != 1) {
@@ -133,10 +143,11 @@ public class DataServlet extends HttpServlet {
   }
 
   /**
-   * The JSON contains a .quotes array of quotes from The Office
-   * and a .characterVotes array of Objects that are character:numVotes pairs.
+   * Return a JSON that contains a .quotes array of quotes from The Office
+   * and a .characterVotes array of objects that are character:numVotes pairs.
    * The number of objects in the .characterVotes array will not exceed numCharacters.
-   * TODO(adamsamuelon): when numCharacters imposes a limit on the json, return the top-voted characters
+   * TODO(adamsamuelson): when numCharacters imposes a limit on the json, return the top-voted characters
+   * TODO(adamsamuelson): have quotes be read in from a txt file
    */
   private String convertToJson(List<String> officeQuotes, int numCharacters) {
     String json = "{";

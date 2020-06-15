@@ -30,10 +30,15 @@ import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-/** Servlet that returns some example content. */
+/* Servlet that receives POST requests to reset the character votes. */
 @WebServlet("/delete-data")
 public class DeleteDataServlet extends HttpServlet {
 
+  /**
+   * Loop through character_names.txt and for every entity in the datastore that matches a name
+   * in this file, set that entity's numVotes property to 0. Resetting the votes using this
+   * method only works as long as the names in the datastore were generated from the txt file.
+   */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
