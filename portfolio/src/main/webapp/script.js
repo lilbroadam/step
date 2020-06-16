@@ -61,15 +61,16 @@ async function getRandomQuote() {
 /**
  * Fill in the 'favorite-character-votes' div with the current scoreboard
  */
-async function getCharacterVotes() {
+async function getCharacterVotes(numCharacters) {
   // Get the favorite character votes in the JSON returned from the /data servlet
-  fetch('/data').then(response => response.json()).then((json) => {
+  let url = '/data?numCharacters='.concat(numCharacters);
+  fetch(url).then(response => response.json()).then((json) => {
     const characterVotes = json.characterVotes;
 
     const greetingContainer = document.getElementById('favorite-character-votes');
     greetingContainer.innerHTML = '';
 
-    // Populate the charcter scoreboard
+    // Populate the character scoreboard
     for(var i = 0; i < Object.keys(characterVotes).length; i++){
       greetingContainer.appendChild(createListElement(
         characterVotes[i].character + ": " + characterVotes[i].numVotes
