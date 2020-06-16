@@ -79,10 +79,10 @@
 
       <form action="/data" method="POST">
         <p>Who's your favorite character from the office?</p>
-        <textarea name="favorite-character" rows="2" cols="40">Michael, Jim, Pam, Dwight, Creed, etc.</textarea>
-        <br>
+        <textarea name="favorite-character" rows="1" cols="40">Michael, Jim, Pam, Dwight, Creed, etc.</textarea>
+        OR
         <input type="checkbox" name="no-favorite">I don't watch The Office / no favorite
-        <br><br>
+        <br>
 
         <input type="submit" />
       </form>
@@ -94,6 +94,7 @@
 
       <div id="favorite-character-votes">
         <script type="text/javascript">
+          parseNumCharactersParam();
           function parseNumCharactersParam() {
             var numCharacters = document.getElementById("numCharacters").value;
             getCharacterVotes(numCharacters);
