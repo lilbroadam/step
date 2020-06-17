@@ -119,6 +119,7 @@ function loadUTMap(location, buttonHover) {
     // utMap.panTo(utcsCoords); // TODO(adamsamuelson): get panTo to work
     utMap.setCenter(utcsCoords);
     utMap.setZoom(18);
+    utMap.setHeading(90);
     utMap.setMapTypeId('satellite');
   }
 }
