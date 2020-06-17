@@ -110,11 +110,21 @@ function loadUTMap(location, buttonHover) {
   setButtonHoverBounce('tower-button', towerMarker);
   setButtonHoverBounce('utcs-button', utcsMarker);
 
+  document.getElementById('map-info').innerHTML = '';
+  setTowerStreetviewVisible(false);
+
   if(location == 'tower') {
     // utMap.panTo(towerCoords); // TODO(adamsamuelson): get panTo to work
     utMap.setCenter(towerCoords);
     utMap.setZoom(18);
     utMap.setMapTypeId('satellite');
+
+    var pictureName = 'map-tower-1.jpg';
+    var width = 650;
+    var infoElement = document.getElementById('map-info');
+    infoElement.innerHTML = `<img src="images/${pictureName}" width="${width}">`;
+    setTowerStreetviewVisible(true);
+
   } else if (location == 'utcs') {
     // utMap.panTo(utcsCoords); // TODO(adamsamuelson): get panTo to work
     utMap.setCenter(utcsCoords);
@@ -132,4 +142,16 @@ function setButtonHoverBounce(elementId, marker) {
   var element = document.getElementById(elementId);
   element.onmouseenter = function() {marker.setAnimation(google.maps.Animation.BOUNCE)};
   element.onmouseleave = function() {marker.setAnimation(null)};
+}
+
+/**
+ * Set if the tower's street view iframe is visible or not
+ * TODO(adamsamuelson): come up with a better solution
+ */
+function setTowerStreetviewVisible(visible){
+  if(visible == true){
+    document.getElementById('map-tower-street-view').height = 450;
+  } else {
+    document.getElementById('map-tower-street-view').height = 0;
+  }
 }
