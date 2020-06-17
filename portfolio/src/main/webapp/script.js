@@ -92,8 +92,19 @@ function createListElement(text) {
 
 /** Create a Google Map of UT and add it to the page. */
 function loadUTMap() {
-  const map = new google.maps.Map(
-      document.getElementById('map'),
-      {center: {lat: 30.285, lng: -97.734}, zoom: 15}
+  var utCoords = {lat: 30.285, lng: -97.734};
+  var towerCoords = {lat: 30.286217, lng: -97.739388};
+  var utcsCoords = {lat: 30.286224, lng: -97.736531};
+
+  var utMap = new google.maps.Map(
+    document.getElementById('map'), {
+      center: utCoords,
+      zoom: 15, 
+      // mapTypeId: "satellite"
+    }
   );
+  utMap.setTilt(45);
+
+  var towerMarker = new google.maps.Marker({position: towerCoords, map: utMap, animation: google.maps.Animation.DROP});
+  var utcsMarker = new google.maps.Marker({position: utcsCoords, map: utMap, animation: google.maps.Animation.DROP});
 }
