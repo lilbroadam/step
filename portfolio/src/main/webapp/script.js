@@ -91,10 +91,10 @@ function createListElement(text) {
 }
 
 /** Create a Google Map of UT and add it to the page. */
-function loadUTMap(location) {
-  var utCoords = {lat: 30.285, lng: -97.734};
-  var towerCoords = {lat: 30.286217, lng: -97.739388};
-  var utcsCoords = {lat: 30.286224, lng: -97.736531};
+function loadUTMap(location, buttonHover) {
+  const utCoords = {lat: 30.285, lng: -97.734};
+  const towerCoords = {lat: 30.286217, lng: -97.739388};
+  const utcsCoords = {lat: 30.286224, lng: -97.736531};
 
   // Assume map is set to overview by default
   var utMapSettings = {
@@ -103,9 +103,12 @@ function loadUTMap(location) {
   }
   var utMap = new google.maps.Map(document.getElementById('map'), utMapSettings);
   utMap.setTilt(45);
+  // TODO(adamsamuelson): have campus be highlighted by Google Maps
 
   var towerMarker = new google.maps.Marker({position: towerCoords, map: utMap, animation: google.maps.Animation.DROP});
   var utcsMarker = new google.maps.Marker({position: utcsCoords, map: utMap, animation: google.maps.Animation.DROP});
+  setButtonHoverBounce('tower-button', towerMarker);
+  setButtonHoverBounce('utcs-button', utcsMarker);
 
   if(location == 'tower') {
     // utMap.panTo(towerCoords); // TODO(adamsamuelson): get panTo to work
@@ -118,4 +121,14 @@ function loadUTMap(location) {
     utMap.setZoom(18);
     utMap.setMapTypeId('satellite');
   }
+}
+
+/** 
+ * Given the elementId of a button and a marker of a Google Maps Marker,
+ * set the marker to bounce whenever the button is being hovered.
+ */
+function setButtonHoverBounce(elementId, marker) {
+  var element = document.getElementById(elementId);
+  element.onmouseenter = function() {marker.setAnimation(google.maps.Animation.BOUNCE)};
+  element.onmouseleave = function() {marker.setAnimation(null)};
 }
