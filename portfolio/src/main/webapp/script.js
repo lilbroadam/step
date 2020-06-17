@@ -89,3 +89,11 @@ function createListElement(text) {
   liElement.innerText = text;
   return liElement;
 }
+
+/** Create a Google Map of UT and add it to the page. */
+function loadUTMap() {
+  const map = new google.maps.Map(
+      document.getElementById('map'),
+      {center: {lat: 30.285, lng: -97.734}, zoom: 15}
+  );
+}
