@@ -91,20 +91,31 @@ function createListElement(text) {
 }
 
 /** Create a Google Map of UT and add it to the page. */
-function loadUTMap() {
+function loadUTMap(location) {
   var utCoords = {lat: 30.285, lng: -97.734};
   var towerCoords = {lat: 30.286217, lng: -97.739388};
   var utcsCoords = {lat: 30.286224, lng: -97.736531};
 
-  var utMap = new google.maps.Map(
-    document.getElementById('map'), {
-      center: utCoords,
-      zoom: 15, 
-      // mapTypeId: "satellite"
-    }
-  );
+  // Assume map is set to overview by default
+  var utMapSettings = {
+    center: utCoords,
+    zoom: 15
+  }
+  var utMap = new google.maps.Map(document.getElementById('map'), utMapSettings);
   utMap.setTilt(45);
 
   var towerMarker = new google.maps.Marker({position: towerCoords, map: utMap, animation: google.maps.Animation.DROP});
   var utcsMarker = new google.maps.Marker({position: utcsCoords, map: utMap, animation: google.maps.Animation.DROP});
+
+  if(location == 'tower') {
+    // utMap.panTo(towerCoords); // TODO(adamsamuelson): get panTo to work
+    utMap.setCenter(towerCoords);
+    utMap.setZoom(18);
+    utMap.setMapTypeId('satellite');
+  } else if (location == 'utcs') {
+    // utMap.panTo(utcsCoords); // TODO(adamsamuelson): get panTo to work
+    utMap.setCenter(utcsCoords);
+    utMap.setZoom(18);
+    utMap.setMapTypeId('satellite');
+  }
 }

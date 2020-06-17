@@ -108,11 +108,17 @@
       </form>
 
 
-      <h2>The University of Texas at Austin</h2>
+      <h2>The University of Texas at Austin 🤘</h2>
+      <button onclick="loadUTMap('overview')">Overview</button>
+      <button onclick="loadUTMap('tower')">UT Tower</button>
+      <button onclick="loadUTMap('utcs')">Gates-Dell Complex</button>
+      <br>
       <div id="map">
         <script type="text/javascript">
-          loadUTMap();
+          loadUTMap('overview');
         </script>
+      </div>
+      <div id="map-info">
       </div>
 
       <br>
