@@ -131,6 +131,11 @@ function loadUTMap(location, buttonHover) {
     utMap.setZoom(18);
     utMap.setHeading(90);
     utMap.setMapTypeId('satellite');
+
+    var pictureName = 'map-utcs-1.jpg';
+    var width = 650;
+    var infoElement = document.getElementById('map-info');
+    infoElement.innerHTML = `<img src="images/${pictureName}" width="${width}">`;
   }
 }
 
