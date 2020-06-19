@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+google.charts.load('current', {'packages':['corechart']});
+google.charts.setOnLoadCallback(drawChart);
+
 /**
  * Adds a random greeting to the page.
  */
@@ -76,7 +79,31 @@ async function getCharacterVotes(numCharacters) {
         characterVotes[i].character + ": " + characterVotes[i].numVotes
       ));
     }
+
   });
+}
+
+function drawChart(){
+  // Display chart
+  const data = new google.visualization.DataTable();
+  data.addColumn('string', 'Character');
+  data.addColumn('number', 'Votes');
+    data.addRows([
+      ['Creed', 10],
+      ['Dwight', 5],
+      ['Michael', 7],
+      ['Jim', 6]
+    ]);
+
+  const options = {
+    'title': 'Character scoreboard',
+    'width': 500,
+    'height': 400
+  };
+
+  const chart = new google.visualization.PieChart(
+      document.getElementById('favorite-character-votes'));
+  chart.draw(data, options);
 }
 
 /**
