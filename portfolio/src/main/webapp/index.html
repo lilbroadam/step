@@ -5,6 +5,7 @@
     <title>My Portfolio</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_ehHElCc9_JI048RbgtI7GBQL9zYpxxg"></script>
   </head>
 
   <style>
@@ -106,6 +107,25 @@
         <button type="submit">Reset character votes</button>
       </form>
 
+
+      <h2>The University of Texas at Austin 🤘</h2>
+      <button onclick="loadUTMap('overview')">Overview</button>
+      <button id="tower-button" onclick="loadUTMap('tower')">UT Tower</button>
+      <button id="utcs-button" onclick="loadUTMap('utcs')">Gates-Dell Complex</button>
+      <br>
+      <div id="map">
+        <script type="text/javascript">
+          loadUTMap('overview');
+        </script>
+      </div>
+      <br>
+      <iframe id="map-tower-street-view"
+        src="https://www.google.com/maps/embed?pb=!4v1592424566165!6m8!1m7!1sCAoSLEFGMVFpcFB4b3lwSDdxNklCR2ZjTGFZUFM0cHlMU2NWX0tybnFZQ0lEZzM3!2m2!1d30.2854468!2d-97.7394366!3f7.286565748813825!4f25.020081998063915!5f0.5970117501821992"
+        width="650" height="0" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0">
+      </iframe>
+      <div id="map-info">
+
+      </div>
 
       <h2>Connect!</h2>
       <ul>

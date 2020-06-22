@@ -11,3 +11,9 @@
 h1 {
   text-align:center;
 }
+
+#map {
+  border: thin solid black;
+  height: 450px;
+  width: 650px;
+}

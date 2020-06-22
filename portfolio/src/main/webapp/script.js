@@ -89,3 +89,74 @@ function createListElement(text) {
   liElement.innerText = text;
   return liElement;
 }
+
+/** Create a Google Map of UT and add it to the page. */
+function loadUTMap(location, buttonHover) {
+  const utCoords = {lat: 30.285, lng: -97.734};
+  const towerCoords = {lat: 30.286217, lng: -97.739388};
+  const utcsCoords = {lat: 30.286224, lng: -97.736531};
+
+  // Assume map is set to overview by default
+  var utMapSettings = {
+    center: utCoords,
+    zoom: 15
+  }
+  var utMap = new google.maps.Map(document.getElementById('map'), utMapSettings);
+  utMap.setTilt(45);
+  // TODO(adamsamuelson): have campus be highlighted by Google Maps
+
+  var towerMarker = new google.maps.Marker({position: towerCoords, map: utMap, animation: google.maps.Animation.DROP});
+  var utcsMarker = new google.maps.Marker({position: utcsCoords, map: utMap, animation: google.maps.Animation.DROP});
+  setButtonHoverBounce('tower-button', towerMarker);
+  setButtonHoverBounce('utcs-button', utcsMarker);
+
+  document.getElementById('map-info').innerHTML = '';
+  setTowerStreetviewVisible(false);
+
+  if(location == 'tower') {
+    // utMap.panTo(towerCoords); // TODO(adamsamuelson): get panTo to work
+    utMap.setCenter(towerCoords);
+    utMap.setZoom(18);
+    utMap.setMapTypeId('satellite');
+
+    var pictureName = 'map-tower-1.jpg';
+    var width = 650;
+    var infoElement = document.getElementById('map-info');
+    infoElement.innerHTML = `<img src="images/${pictureName}" width="${width}">`;
+    setTowerStreetviewVisible(true);
+
+  } else if (location == 'utcs') {
+    // utMap.panTo(utcsCoords); // TODO(adamsamuelson): get panTo to work
+    utMap.setCenter(utcsCoords);
+    utMap.setZoom(18);
+    utMap.setHeading(90);
+    utMap.setMapTypeId('satellite');
+
+    var pictureName = 'map-utcs-1.jpg';
+    var width = 650;
+    var infoElement = document.getElementById('map-info');
+    infoElement.innerHTML = `<img src="images/${pictureName}" width="${width}">`;
+  }
+}
+
+/** 
+ * Given the elementId of a button and a marker of a Google Maps Marker,
+ * set the marker to bounce whenever the button is being hovered.
+ */
+function setButtonHoverBounce(elementId, marker) {
+  var element = document.getElementById(elementId);
+  element.onmouseenter = function() {marker.setAnimation(google.maps.Animation.BOUNCE)};
+  element.onmouseleave = function() {marker.setAnimation(null)};
+}
+
+/**
+ * Set if the tower's street view iframe is visible or not
+ * TODO(adamsamuelson): come up with a better solution
+ */
+function setTowerStreetviewVisible(visible){
+  if(visible == true){
+    document.getElementById('map-tower-street-view').height = 450;
+  } else {
+    document.getElementById('map-tower-street-view').height = 0;
+  }
+}
