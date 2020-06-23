@@ -15,6 +15,8 @@
 google.charts.load('current', {'packages':['corechart']});
 google.charts.setOnLoadCallback(drawChart);
 
+var characterVotes = new Array;
+
 /**
  * Adds a random greeting to the page.
  */
@@ -62,38 +64,42 @@ async function getRandomQuote() {
 }
 
 /**
- * Fill in the 'favorite-character-votes' div with the current scoreboard
+ * Given the number of characters to count, build the chart to show the
+ * character votes in the 'favorite-character-votes' div.
  */
 async function getCharacterVotes(numCharacters) {
   // Get the favorite character votes in the JSON returned from the /data servlet
   let url = '/data?numCharacters='.concat(numCharacters);
   fetch(url).then(response => response.json()).then((json) => {
-    const characterVotes = json.characterVotes;
+    const characterVotesJSON = json.characterVotes;
 
     const greetingContainer = document.getElementById('favorite-character-votes');
     greetingContainer.innerHTML = '';
 
-    // Populate the character scoreboard
-    for(var i = 0; i < Object.keys(characterVotes).length; i++){
-      greetingContainer.appendChild(createListElement(
-        characterVotes[i].character + ": " + characterVotes[i].numVotes
-      ));
+    // Populate the character scoreboard with numCharacters characters
+    characterVotes = new Array;
+    for(var i = 0; i < Object.keys(characterVotesJSON).length; i++){
+      characterVotes.push(
+          {character: characterVotesJSON[i].character, numVotes: characterVotesJSON[i].numVotes}
+      );
     }
 
+    drawChart();
   });
 }
 
+/** 
+ * Read the characterVotes array and draw the chart to show
+ * the character votes.
+ */
 function drawChart(){
-  // Display chart
-  const data = new google.visualization.DataTable();
-  data.addColumn('string', 'Character');
-  data.addColumn('number', 'Votes');
-    data.addRows([
-      ['Creed', 10],
-      ['Dwight', 5],
-      ['Michael', 7],
-      ['Jim', 6]
-    ]);
+  const dataTable = new google.visualization.DataTable();
+  dataTable.addColumn('string', 'Character');
+  dataTable.addColumn('number', 'Votes');
+  for(var i = 0; i < characterVotes.length; i++) {
+    var array = [characterVotes[i].character + '', Number(characterVotes[i].numVotes)];
+    dataTable.addRow(array);
+  }
 
   const options = {
     'title': 'Character scoreboard',
@@ -103,18 +109,7 @@ function drawChart(){
 
   const chart = new google.visualization.PieChart(
       document.getElementById('favorite-character-votes'));
-  chart.draw(data, options);
-}
-
-/**
- * Creates an <li> element containing text.
- * This function was taken from 
- *   /walkthroughs/week-3-server/examples/server-stats/src/main/webapp/script.js
- */
-function createListElement(text) {
-  const liElement = document.createElement('li');
-  liElement.innerText = text;
-  return liElement;
+  chart.draw(dataTable, options);
 }
 
 /** Create a Google Map of UT and add it to the page. */
