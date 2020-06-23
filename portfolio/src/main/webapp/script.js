@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-google.charts.load('current', {'packages':['corechart']});
+google.charts.load('current', {packages: ['corechart', 'bar']});
 google.charts.setOnLoadCallback(drawChart);
 
 var characterVotes = new Array;
@@ -103,11 +103,11 @@ function drawChart(){
 
   const options = {
     'title': 'Character scoreboard',
-    'width': 500,
+    'width': 650,
     'height': 400
   };
 
-  const chart = new google.visualization.PieChart(
+  const chart = new google.charts.Bar(
       document.getElementById('favorite-character-votes'));
   chart.draw(dataTable, options);
 }
