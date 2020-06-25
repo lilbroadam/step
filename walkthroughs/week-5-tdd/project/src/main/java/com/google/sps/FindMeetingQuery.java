@@ -108,6 +108,11 @@ public final class FindMeetingQuery {
    * Ex: [[0, 30], [1, 31], [2, 32], [60, 90]] -> [[0, 32], [60, 90]]
    */
   private static Collection<TimeRange> condenseTimeRanges(Collection<TimeRange> expandedTimeRanges) {
+
+    if(expandedTimeRanges.size() == 1) {
+      return expandedTimeRanges;
+    }
+
     Collection<TimeRange> condensedTimeRanges = new ArrayList<TimeRange>(); // TODO change to linkedlist?
     
     TimeRange[] timeRanges = expandedTimeRanges.toArray(new TimeRange[0]);
