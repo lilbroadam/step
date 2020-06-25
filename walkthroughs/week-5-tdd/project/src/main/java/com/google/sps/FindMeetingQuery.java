@@ -28,6 +28,10 @@ public final class FindMeetingQuery {
    */
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
     
+    if(request.getDuration() > TimeRange.WHOLE_DAY.duration()) {
+      return new ArrayList<TimeRange>();
+    }
+
     /**
      * Instructions: 
      * For a time slot to work, all attendees must be free to attend the meeting.
