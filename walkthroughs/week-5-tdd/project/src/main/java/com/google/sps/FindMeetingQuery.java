@@ -109,7 +109,7 @@ public final class FindMeetingQuery {
 
           // +1 on end of 
           TimeRange condensed = 
-            TimeRange.fromStartEnd(startChunk.start(), timeRanges[j - 1].end(), false);
+            TimeRange.fromStartEnd(startChunk.start(), timeRanges[j - 1].end(), true);
           condensedTimeRanges.add(condensed);
           i = timeRanges.length;
           break;
