@@ -28,43 +28,11 @@ public final class FindMeetingQuery {
    * in events can be considered busy times when the meeting can't be scheduled.
    */
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
-    
-    if(request.getDuration() > TimeRange.WHOLE_DAY.duration()) {
+    if (request.getDuration() > TimeRange.WHOLE_DAY.duration()) {
       return new ArrayList<TimeRange>();
     }
 
-    /**
-     * Instructions: 
-     * For a time slot to work, all attendees must be free to attend the meeting.
-     * When a query is made, it will be given a collection of all known events.
-     * Each event has:
-     * - a name
-     * - a time range
-     * - a collection of attendees
-    */
-
-    Collection<TimeRange> availableTimeSlots = busyToFree(events, request);
-
-    System.out.println(request.hashCode() + ": " + request.getDuration() + "; " + request.getAttendees().toString());
-    for(Event event : events) {
-      // System.out.println(event.getTitle() + ": " + event.getWhen().duration());
-      System.out.println(event.getWhen().start() + " - " + event.getWhen().end() + "; " + event.getAttendees());
-    }
-    
-    // Condense the available meeting times into one TimeRange for each time chunk
-    System.out.println("Before condensing:");
-    for (TimeRange time : availableTimeSlots) {
-      System.out.println(time.start() + " - " + time.end());
-    }
-    availableTimeSlots = condenseTimeRanges(availableTimeSlots);
-    System.out.println("After condensing:");
-    for (TimeRange time : availableTimeSlots) {
-      System.out.println(time.start() + " - " + time.end());
-    }
-    System.out.println();
-
-
-    return availableTimeSlots;
+    return condenseTimeRanges(busyToFree(events, request));
   }
 
   /**
@@ -86,8 +54,8 @@ public final class FindMeetingQuery {
       TimeRange potentialMeeting = TimeRange.fromStartDuration(meetingTime, eventDuration);
       for (Event event : busyEvents) {
         Set<String> meetingAttendees = new HashSet<String>(meetingRequest.getAttendees());
-        meetingAttendees.retainAll(event.getAttendees());
-        if (!meetingAttendees.isEmpty()) { // If someone from Event is part of the meetingRequest
+        meetingAttendees.retainAll(event.getAttendees()); // meetingAttendees ⋂ event
+        if (!meetingAttendees.isEmpty()) { // If someone from event is part of the meetingRequest.
           if (potentialMeeting.overlaps(event.getWhen())) { // This timeslot is busy; skip.
             allCanAttend = false;
             break;
@@ -108,33 +76,32 @@ public final class FindMeetingQuery {
    * Ex: [[0, 30], [1, 31], [2, 32], [60, 90]] -> [[0, 32], [60, 90]]
    */
   private static Collection<TimeRange> condenseTimeRanges(Collection<TimeRange> expandedTimeRanges) {
-
-    if(expandedTimeRanges.size() == 1) {
+    if (expandedTimeRanges.size() == 1) {
       return expandedTimeRanges;
     }
 
-    Collection<TimeRange> condensedTimeRanges = new ArrayList<TimeRange>(); // TODO change to linkedlist?
+    Collection<TimeRange> condensedTimeRanges = new ArrayList<TimeRange>();
     
     TimeRange[] timeRanges = expandedTimeRanges.toArray(new TimeRange[0]);
-    for(int i = 0; i < timeRanges.length; i++) {
+    for (int i = 0; i < timeRanges.length; i++) {
       TimeRange startChunk = timeRanges[i];
-      System.out.println("startChunk: " + timeRanges[i].start());
-      for(int j = i + 1; j < timeRanges.length; j++) {
-        // Start time jump detected
-        if(timeRanges[j].start() != timeRanges[j - 1].start() + TIME_INCREMENT) {
+      for (int j = i + 1; j < timeRanges.length; j++) {
+        // Start time discontinuity detected.
+        if (timeRanges[j].start() != timeRanges[j - 1].start() + TIME_INCREMENT) {
           TimeRange condensed = 
             TimeRange.fromStartEnd(startChunk.start(), timeRanges[j - 1].end(), false);
           condensedTimeRanges.add(condensed);
 
-          i = j - 1; // cancel out the i++ at the end of the outter for loop
+          i = j - 1; // Cancel out the i++ at the end of the outter for loop.
           break;
-        } else if (j == timeRanges.length - 1
-            || timeRanges[j].end() >= TimeRange.WHOLE_DAY.end()) { // tail of condensedTimeRanges
-
+        } else if (j == timeRanges.length - 1 
+            || timeRanges[j].end() >= TimeRange.WHOLE_DAY.end()) {
+          // Special case: last element of condensedTimeRanges.
           TimeRange condensed = 
             TimeRange.fromStartEnd(startChunk.start(), timeRanges[j - 1].end(), true);
           condensedTimeRanges.add(condensed);
-          i = timeRanges.length;
+
+          i = timeRanges.length; // End the outter for loop.
           break;
         }
       }
