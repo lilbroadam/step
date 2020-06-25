@@ -68,7 +68,7 @@ public final class FindMeetingQuery {
    * start times are adjacent to each other will be separated by a time interval of eventDuration.
    */
   private static Collection<TimeRange> busyToFree(Collection<Event> busyEvents, int eventDuration) {
-    Collection<TimeRange> availableTimeSlots = new ArrayList<TimeRange>(); // TODO change to linkedlist?
+    Collection<TimeRange> availableTimeSlots = new ArrayList<TimeRange>(busyEvents.size() / 2);
 
     // For every timeslot of a day,
     for (int meetingTime = TimeRange.START_OF_DAY; meetingTime <= TimeRange.END_OF_DAY;
@@ -125,25 +125,4 @@ public final class FindMeetingQuery {
 
     return condensedTimeRanges;
   }
-
-  /*
-  int startTime = availableTimeSlots[0].start();
-    int endTime = availableTimeSlots[0].end();
-    for (TimeRange timeRange : availableTimeSlots) {
-      if (TIME_INCREMENT == timeRange.start) {
-
-      }
-    }
-
-    TimeRange chunkStart = availableTimeSlots[0];
-    TimeRange chunkEnd = null;
-    // for(TimeRange timeRange : availableTimeSlots){
-    for(int i = 0; i < availableTimeSlots; i++) {
-      TimeRange timeRange = availableTimeSlots[i];
-      
-      if(chunkStart.start() + TIME_INCREMENT == timeRange){
-
-      }
-    }
-  */
 }
