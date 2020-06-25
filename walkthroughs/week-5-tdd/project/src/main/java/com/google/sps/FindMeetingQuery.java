@@ -13,9 +13,10 @@
 // limitations under the License.
 
 package com.google.sps;
-
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 public final class FindMeetingQuery {
   private static final int TIME_INCREMENT = 1;
@@ -42,7 +43,7 @@ public final class FindMeetingQuery {
      * - a collection of attendees
     */
 
-    Collection<TimeRange> availableTimeSlots = busyToFree(events, (int)request.getDuration());
+    Collection<TimeRange> availableTimeSlots = busyToFree(events, request);
 
     System.out.println(request.hashCode() + ": " + request.getDuration() + "; " + request.getAttendees().toString());
     for(Event event : events) {
@@ -68,11 +69,14 @@ public final class FindMeetingQuery {
 
   /**
    * Given a Collection of Events that represent when a user is unavailable, return a Collection of
-   * Events representing when a user is available. The start time of Events in the Collection whose
-   * start times are adjacent to each other will be separated by a time interval of eventDuration.
+   * Events representing when a user is available. Each event in the returned Collection will have
+   * at least one attendee that can also be found in meetingRequest.getAttendees(). The start time
+   * of Events in the Collection returned whose start times are adjacent to each other will be
+   * separated by a time interval of meetingRequest.getDuration().
    */
-  private static Collection<TimeRange> busyToFree(Collection<Event> busyEvents, int eventDuration) {
+  private static Collection<TimeRange> busyToFree(Collection<Event> busyEvents, MeetingRequest meetingRequest) {
     Collection<TimeRange> availableTimeSlots = new ArrayList<TimeRange>(busyEvents.size() / 2);
+    final int eventDuration = (int)meetingRequest.getDuration();
 
     // For every timeslot of a day,
     for (int meetingTime = TimeRange.START_OF_DAY; meetingTime <= TimeRange.END_OF_DAY;
@@ -81,9 +85,13 @@ public final class FindMeetingQuery {
       boolean allCanAttend = true;
       TimeRange potentialMeeting = TimeRange.fromStartDuration(meetingTime, eventDuration);
       for (Event event : busyEvents) {
-        if (potentialMeeting.overlaps(event.getWhen())) { // This timeslot is busy; skip.
-          allCanAttend = false;
-          break;
+        Set<String> meetingAttendees = new HashSet<String>(meetingRequest.getAttendees());
+        meetingAttendees.retainAll(event.getAttendees());
+        if (!meetingAttendees.isEmpty()) { // If someone from Event is part of the meetingRequest
+          if (potentialMeeting.overlaps(event.getWhen())) { // This timeslot is busy; skip.
+            allCanAttend = false;
+            break;
+          }
         }
       }
 
