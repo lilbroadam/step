@@ -109,7 +109,7 @@ public final class FindMeetingQuery {
             TimeRange.fromStartEnd(startChunk.start(), timeRanges[j - 1].end(), false);
           condensedTimeRanges.add(condensed);
 
-          i = j;
+          i = j - 1; // cancel out the i++ at the end of the outter for loop
           break;
         } else if (j == timeRanges.length - 1
             || timeRanges[j].end() >= TimeRange.WHOLE_DAY.end()) { // tail of condensedTimeRanges
