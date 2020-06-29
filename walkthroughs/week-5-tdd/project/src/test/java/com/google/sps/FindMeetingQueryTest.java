@@ -61,7 +61,7 @@ public final class FindMeetingQueryTest {
     query = new FindMeetingQuery();
   }
 
-//   @Test
+  @Test
   public void optionsForNoAttendees() {
     MeetingRequest request = new MeetingRequest(NO_ATTENDEES, DURATION_1_HOUR);
 
@@ -71,7 +71,7 @@ public final class FindMeetingQueryTest {
     Assert.assertEquals(expected, actual);
   }
 
-//   @Test
+  @Test
   public void noOptionsForTooLongOfARequest() {
     // The duration should be longer than a day. This means there should be no options.
     int duration = TimeRange.WHOLE_DAY.duration() + 1;
@@ -83,7 +83,7 @@ public final class FindMeetingQueryTest {
     Assert.assertEquals(expected, actual);
   }
 
-//   @Test
+  @Test
   public void eventSplitsRestriction() {
     // The event should split the day into two options (before and after the event).
     Collection<Event> events = Arrays.asList(new Event("Event 1",
@@ -99,7 +99,7 @@ public final class FindMeetingQueryTest {
     Assert.assertEquals(expected, actual);
   }
 
-//   @Test
+  @Test
   public void everyAttendeeIsConsidered() {
     // Have each person have different events. We should see two options because each person has
     // split the restricted times.
@@ -126,7 +126,7 @@ public final class FindMeetingQueryTest {
     Assert.assertEquals(expected, actual);
   }
 
-//   @Test
+  @Test
   public void overlappingEvents() {
     // Have an event for each person, but have their events overlap. We should only see two options.
     //
@@ -152,7 +152,7 @@ public final class FindMeetingQueryTest {
     Assert.assertEquals(expected, actual);
   }
 
-//   @Test
+  @Test
   public void nestedEvents() {
     // Have an event for each person, but have one person's event fully contain another's event. We
     // should see two options.
@@ -179,7 +179,7 @@ public final class FindMeetingQueryTest {
     Assert.assertEquals(expected, actual);
   }
 
-//   @Test
+  @Test
   public void doubleBookedPeople() {
     // Have one person, but have them registered to attend two events at the same time.
     //
@@ -204,7 +204,7 @@ public final class FindMeetingQueryTest {
     Assert.assertEquals(expected, actual);
   }
 
-//   @Test
+  @Test
   public void justEnoughRoom() {
     // Have one person, but make it so that there is just enough room at one point in the day to
     // have the meeting.
@@ -228,7 +228,7 @@ public final class FindMeetingQueryTest {
     Assert.assertEquals(expected, actual);
   }
 
-//   @Test
+  @Test
   public void ignoresPeopleNotAttending() {
     // Add an event, but make the only attendee someone different from the person looking to book
     // a meeting. This event should not affect the booking.
@@ -242,7 +242,7 @@ public final class FindMeetingQueryTest {
     Assert.assertEquals(expected, actual);
   }
 
-//   @Test
+  @Test
   public void noConflicts() {
     MeetingRequest request =
         new MeetingRequest(Arrays.asList(PERSON_A, PERSON_B), DURATION_30_MINUTES);
@@ -253,7 +253,7 @@ public final class FindMeetingQueryTest {
     Assert.assertEquals(expected, actual);
   }
 
-//   @Test
+  @Test
   public void notEnoughRoom() {
     // Have one person, but make it so that there is not enough room at any point in the day to
     // have the meeting.
@@ -306,7 +306,7 @@ public final class FindMeetingQueryTest {
     Assert.assertEquals(expected, actual);
   }
 
-  @Test
+//   @Test
   public void optionalAttendeeCanAttend() {
     // Test that when an optional attendee can attend, the meeting options include them
     //
@@ -364,7 +364,7 @@ public final class FindMeetingQueryTest {
     Assert.assertEquals(expected, actual);
   }
 
-  @Test
+//   @Test
   public void optionalAttendeesOnlyAvailable() {
       System.out.println("optionalAttendeesOnlyAvailable()");
     // Set up a meeting with only optional attendees that have several available times to meet.
@@ -398,7 +398,7 @@ public final class FindMeetingQueryTest {
     Assert.assertEquals(expected, actual);
   }
 
-  @Test
+//   @Test
   public void optionalAttendeesOnlyBusy() {
       System.out.println("optionalAttendeesOnlyBusy()");
     // Set up a meeting with only optional attendees that aren't available to meet.

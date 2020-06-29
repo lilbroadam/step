@@ -35,29 +35,7 @@ public final class FindMeetingQuery {
     Collection<TimeRange> meetingOptions;
     meetingOptions = busyToFree(events, request);
     meetingOptions = condenseTimeRanges(meetingOptions);
-    printMeetings("before filtering: ", meetingOptions);
-    meetingOptions = filterOptionalAttendees(meetingOptions, events, request);
-    // meetingOptions = filterOptionalAttendees2(meetingOptions, events, request);
-    printMeetings("after filtering: ", meetingOptions);
-    
     return meetingOptions;
-  }
-
-  private static Collection<TimeRange> filterOptionalAttendees(
-      Collection<TimeRange> availableTimes, Collection<Event> busyTimes, MeetingRequest meetingRequest) {
-    Collection<TimeRange> reducedSet = new HashSet();
-    Collection<String> optionalAttendees = meetingRequest.getOptionalAttendees();
-
-    // Find meetings in originalMeetings that contain attendees who are optional attendees.
-    // Once a meeting is found, add it to the reducedSet
-    for(TimeRange meeting : availableTimes) {
-    //   if(meeting.) {
-
-    //   }
-    }
-
-
-    return reducedSet.isEmpty() ? availableTimes : reducedSet;
   }
 
 
@@ -134,46 +112,6 @@ public final class FindMeetingQuery {
     }
 
     return condensedTimeRanges;
-  }
-
-  /**
-   * Given a Collection of TimeRanges representing possible meeting times and a MeetingRequest,
-   * if the optional attendees are able to be included in some meeting options, return a Collection of TimeRanges of those meeting options.
-   * If the optional attendees aren't able to attend any of the meeting options, return the same meetingOptions that was given.
-   */
-  private static Collection<TimeRange> filterOptionalAttendees2(
-        Collection<TimeRange> meetingOptions, Collection<Event> events,  MeetingRequest meetingRequest) {
-    
-    Collection<TimeRange> optionalsIncluded = new ArrayList<TimeRange>();
-
-    for(Event event : events) {
-      for(TimeRange meetingOption : meetingOptions) {
-        if(event.getWhen().equals(meetingOption)) {
-          System.out.println("in the if!!!!!!");
-          break;
-        }
-
-        System.out.println("checking: " + meetingOption.toString());
-
-        Set<String> optionalAttendees = new HashSet<String>(meetingRequest.getOptionalAttendees());
-        optionalAttendees.retainAll(event.getAttendees()); // optionalAttendees = optionalAttendees ⋂ event.getAttendees()
-        if(!optionalAttendees.isEmpty()) {
-          optionalsIncluded.add(meetingOption);
-        }
-      }
-    }
-
-    if(!optionalsIncluded.isEmpty()) {
-      return optionalsIncluded;
-    } else {
-      return meetingOptions;
-    }
-
-    /*
-        Set<String> meetingAttendees = new HashSet<String>(meetingRequest.getAttendees());
-        meetingAttendees.retainAll(event.getAttendees()); // meetingAttendees ⋂ event
-        if (!meetingAttendees.isEmpty()) { // If someone from event is part of the meetingRequest.
-    */
   }
 
   private static void printMeetings(String preMessage, Collection<TimeRange> meetingOptions) {
